@@ -2,7 +2,7 @@
 
 This guide explains how to use the SQLite database created according to the ERD.
 
-## 📋 Database Structure
+## Database Structure
 
 The database consists of the following tables:
 
@@ -14,7 +14,7 @@ The database consists of the following tables:
 - **chat_log** - Chat logs
 - **favorite_news** - Favorite news
 
-## 🚀 Initializing the Database
+## Initializing the Database
 
 The database has already been created. If you want to create it from scratch:
 
@@ -28,7 +28,7 @@ This script:
 - Creates indexes
 - Adds sample categories and tips
 
-## 📝 Manual Data Entry
+## Manual Data Entry
 
 ### Method 1: Interactive Script (Recommended)
 
@@ -105,7 +105,7 @@ curl -X POST "http://localhost:8000/api/tips" \
   }'
 ```
 
-## 📊 Querying Data
+## Querying Data
 
 ### Using Python
 
@@ -138,13 +138,13 @@ curl "http://localhost:8000/api/news?category_id=1"
 curl "http://localhost:8000/api/tips"
 
 # Easy tips
-curl "http://localhost:8000/api/tips?difficulty=Easy"
+curl "http://localhost:8000/api/tips?difficulty=Easy](http://localhost:8000/api/tips?difficulty=Kolay)"
 
 # Categories
 curl "http://localhost:8000/api/categories"
 ```
 
-## 🔧 Updating and Deleting Data
+## Updating and Deleting Data
 
 ### Using Python
 
@@ -181,11 +181,11 @@ curl -X PUT "http://localhost:8000/api/news/1" \
 curl -X DELETE "http://localhost:8000/api/news/1"
 ```
 
-## 📍 Database File
+## Database File
 
 The database file is stored as `database.db` in the project root directory.
 
-## 🔍 Examining the Database
+## Examining the Database
 
 To examine the SQLite database directly:
 
@@ -200,21 +200,21 @@ SELECT * FROM news;  # Show all news
 SELECT * FROM tips;  # Show all tips
 ```
 
-## 📚 API Documentation
+## API Documentation
 
 When the backend is running, you can access the API documentation at:
 
 - Swagger UI: http://localhost:8000/docs
 - ReDoc: http://localhost:8000/redoc
 
-## ⚠️ Notes
+## Notes
 
 1. **Foreign Key Relationships**: When adding news, you must use an existing `category_id`
 2. **Unique Constraints**: In the `favorite_news` table, a user cannot favorite the same news article more than once
 3. **Timestamps**: `created_at` fields are automatically added
 4. **Data Backup**: Regularly backup the `database.db` file
 
-## 🎯 Example Usage Scenario
+## Example Usage Scenario
 
 1. **Create Category**:
    ```python
