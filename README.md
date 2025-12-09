@@ -2,7 +2,7 @@
 
 A modern web application with FastAPI backend and Streamlit frontend, integrated with Google Gemini AI.
 
-## 🏗️ Architecture :)
+## Architecture :)
 
 ```
 Flizlen_App/
@@ -15,7 +15,7 @@ Flizlen_App/
 └── README.md         # This file
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
