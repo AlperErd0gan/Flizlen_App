@@ -2,7 +2,7 @@
 
 A modern web application with FastAPI backend and Streamlit frontend, integrated with Google Gemini AI.
 
-## 🏗️ Architecture
+## 🏗️ Architecture :)
 
 ```
 Flizlen_App/
@@ -19,7 +19,7 @@ Flizlen_App/
 
 ### Prerequisites
 
-- Python 3.8 or higher
+- Python 3.10 or higher
 - Google Gemini API key ([Get one here](https://makersuite.google.com/app/apikey))
 
 ### Installation
@@ -52,7 +52,7 @@ Flizlen_App/
 
 ### Running the Application
 
-#### Option 1: Use the Startup Scripts (Recommended) ⭐
+#### Option 1: Use the Startup Scripts (Recommended) 
 
 **Start everything at once:**
 ```bash
@@ -99,7 +99,7 @@ streamlit run app.py
 - **API Documentation:** http://localhost:8000/docs (Swagger UI)
 - **Alternative API Docs:** http://localhost:8000/redoc
 
-## 📡 API Endpoints
+## API Endpoints
 
 ### Health Check
 - `GET /` - Root endpoint
@@ -136,18 +136,18 @@ FRONTEND_PORT=8501
 BACKEND_URL=http://localhost:8000
 ```
 
-## 🎯 Features
+## Features
 
-- ✅ FastAPI backend with async support
-- ✅ Streamlit interactive frontend
-- ✅ Google Gemini AI integration
-- ✅ Conversation history support
-- ✅ CORS enabled for frontend-backend communication
-- ✅ Health check endpoints
-- ✅ Error handling and validation
-- ✅ RESTful API design
+- FastAPI backend with async support
+- Streamlit interactive frontend
+- Google Gemini AI integration
+- Conversation history support
+- CORS enabled for frontend-backend communication
+- Health check endpoints
+- Error handling and validation
+- RESTful API design
 
-## 📝 Usage Example
+## Usage Example
 
 1. Start the backend server
 2. Start the Streamlit frontend
@@ -155,7 +155,7 @@ BACKEND_URL=http://localhost:8000
 4. Type a message in the chat input
 5. The message is sent to the backend, processed by Gemini AI, and the response is displayed
 
-## 🛠️ Development
+## Development
 
 ### Project Structure
 
@@ -169,7 +169,7 @@ BACKEND_URL=http://localhost:8000
 2. **Frontend:** Update UI components in `frontend/app.py`
 3. **API Integration:** Modify the request/response models as needed
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Backend not starting
 - Check if port 8000 is available
@@ -190,7 +190,7 @@ BACKEND_URL=http://localhost:8000
 
 This project is provided as-is for development purposes.
 
-## 🤝 Contributing
+##  Contributing
 
 Feel free to extend this project with additional features:
 - Database integration
