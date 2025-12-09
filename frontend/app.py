@@ -88,6 +88,7 @@ st.markdown("""
     [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] {
         padding: 1rem;
         border-radius: 10px;
+        color: #FFFFFF;
     }
     /* User Message Style (Green) */
     [data-testid="stChatMessage"][data-testid="user"] [data-testid="stMarkdownContainer"] {
@@ -134,6 +135,13 @@ st.markdown("""
         height: 100%;
         border: 1px solid #E0E0E0;
     }
+    
+    /* Center avatar icons vertically inside chat message rows */
+    [data-testid="stChatMessage"] {
+        display: flex;
+        align-items: center;
+    }
+    
     </style>
 """, unsafe_allow_html=True)
 
@@ -181,7 +189,7 @@ def go_to_news():
 
 def landing_page():
     st.markdown('<div class="main-header">🌿 Flizlen</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Your intelligent companion for insights and news</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Tarım haberleri ve akıllı öneriler için dijital rehberiniz</div>', unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 2, 1])
     
@@ -192,8 +200,8 @@ def landing_page():
         with c1:
             st.markdown("""
             <div style="text-align: center; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 10px;">
-                <h3 style="margin:0;">💬 Chat</h3>
-                <p style="color: #666;">Interact with the AI assistant</p>
+                <h3 style="margin:0;">💬 Sohbet</h3>
+                <p style="color: #666;">Yapay zeka danışmanı ile sohbet edin</p>
             </div>
             """, unsafe_allow_html=True)
             if st.button("Open Chat", use_container_width=True):
@@ -203,8 +211,8 @@ def landing_page():
         with c2:
             st.markdown("""
             <div style="text-align: center; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 10px;">
-                <h3 style="margin:0;">📰 News</h3>
-                <p style="color: #666;">Latest updates and headlines</p>
+                <h3 style="margin:0;">📰 Haberler</h3>
+                <p style="color: #666;">Son gelişmeler ve başlıklar</p>
             </div>
             """, unsafe_allow_html=True)
             if st.button("Read News", use_container_width=True):
@@ -215,11 +223,11 @@ def chat_interface():
     # Top Navigation Bar
     col_nav1, col_nav2 = st.columns([1, 5])
     with col_nav1:
-        if st.button("← Home"):
+        if st.button("← Anasayfa"):
             go_to_landing()
             st.rerun()
     with col_nav2:
-        st.markdown("## 💬 Intelligent Chat")
+        st.markdown("## 💬 Akıllı Asistan")
 
     # Sidebar for Chat
     with st.sidebar:
@@ -291,7 +299,7 @@ def news_interface():
             go_to_landing()
             st.rerun()
     with col_nav2:
-        st.markdown("## 📰 Latest News")
+        st.markdown("## 📰 Son Haberler")
 
     # Mock Data for News (You can replace this with a backend call later)
     news_items = [
