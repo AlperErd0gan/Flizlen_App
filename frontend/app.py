@@ -32,7 +32,7 @@ st.markdown("""
     /* Global Background */
     .stApp {
         background-color: #F5F1E6;
-        color: #2F3E2E;
+        color: #5A8560;
     }
     
     /* Headings */
@@ -69,9 +69,9 @@ st.markdown("""
         transition: all 0.3s;
     }
     .stButton>button:hover {
-        background-color: #2F3E2E;
+        background-color: #5A8560;
         color: #FFFFFF;
-        border-color: #2F3E2E;
+        border-color: #5A8560;
     }
 
     /* Chat Messages */
@@ -111,7 +111,7 @@ st.markdown("""
         border-left: 5px solid #6B8E23;
         margin-bottom: 1rem;
         box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        color: #2F3E2E;
+        color: #5A8560;
     }
     .news-date {
         color: #888;
@@ -221,13 +221,23 @@ def landing_page():
 
 def chat_interface():
     # Top Navigation Bar
-    col_nav1, col_nav2 = st.columns([1, 5], vertical_alignment="center")
+    # We use 3 columns: [Button, Title, Spacer] to ensure the title is perfectly centered
+    col_nav1, col_nav2, col_nav3 = st.columns([1, 8, 1], vertical_alignment="center")
+    
     with col_nav1:
         if st.button("← Anasayfa"):
             go_to_landing()
             st.rerun()
+            
     with col_nav2:
-        st.markdown("## 💬 Akıllı Asistan")
+        # We use HTML here to force text-align center
+        st.markdown(
+            "<h2 style='text-align: center; margin-top: -20px; color: #5a8560;'>💬 Akıllı Asistan</h2>",
+            unsafe_allow_html=True
+        )
+        
+    with col_nav3:
+        st.empty() # Spacer to balance the layout
 
     # Sidebar for Chat
     with st.sidebar:
@@ -293,13 +303,23 @@ def chat_interface():
 
 def news_interface():
     # Top Navigation Bar
-    col_nav1, col_nav2 = st.columns([1, 5], vertical_alignment="center")
+    # We use 3 columns: [Button, Title, Spacer]
+    col_nav1, col_nav2, col_nav3 = st.columns([1, 8, 1], vertical_alignment="center")
+    
     with col_nav1:
         if st.button("← Anasayfa"):
             go_to_landing()
             st.rerun()
+            
     with col_nav2:
-        st.markdown("## 📰 Son Haberler")
+        # We use HTML here to force text-align center
+        st.markdown(
+            "<h2 style='text-align: center; margin-top: -20px; color: #5a8560;'>📰 Son Haberler</h2>", 
+            unsafe_allow_html=True
+        )
+        
+    with col_nav3:
+        st.empty() # Spacer to balance the layout
 
     # Mock Data for News (You can replace this with a backend call later)
     news_items = [
