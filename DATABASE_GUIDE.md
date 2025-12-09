@@ -1,248 +1,247 @@
-# Veritabanı Kullanım Kılavuzu
+# Database Usage Guide
 
-Bu kılavuz, ERD'ye göre oluşturulan SQLite veritabanını nasıl kullanacağınızı açıklar.
+This guide explains how to use the SQLite database created according to the ERD.
 
-## 📋 Veritabanı Yapısı
+## 📋 Database Structure
 
-Veritabanı şu tablolardan oluşur:
+The database consists of the following tables:
 
-- **users** - Kullanıcı bilgileri
-- **tips** - Tarım ipuçları
-- **news_categories** - Haber kategorileri
-- **news** - Haberler
-- **search_history** - Arama geçmişi
-- **chat_log** - Chat logları
-- **favorite_news** - Favori haberler
+- **users** - User information
+- **tips** - Agriculture tips
+- **news_categories** - News categories
+- **news** - News articles
+- **search_history** - Search history
+- **chat_log** - Chat logs
+- **favorite_news** - Favorite news
 
-## 🚀 Veritabanını Başlatma
+## 🚀 Initializing the Database
 
-Veritabanı zaten oluşturulmuş durumda. Eğer sıfırdan oluşturmak isterseniz:
+The database has already been created. If you want to create it from scratch:
 
 ```bash
 python backend/init_db.py
 ```
 
-Bu script:
-- Tüm tabloları oluşturur
-- İlişkileri (foreign keys) kurar
-- İndeksleri oluşturur
-- Örnek kategoriler ve tips ekler
+This script:
+- Creates all tables
+- Sets up relationships (foreign keys)
+- Creates indexes
+- Adds sample categories and tips
 
-## 📝 Manuel Veri Ekleme
+## 📝 Manual Data Entry
 
-### Yöntem 1: İnteraktif Script (Önerilen)
+### Method 1: Interactive Script (Recommended)
 
-En kolay yöntem, interaktif script kullanmaktır:
+The easiest method is to use the interactive script:
 
 ```bash
 python backend/add_data.py
 ```
 
-Bu script size şu seçenekleri sunar:
-1. **Haber Ekle** - Yeni haber ekleyebilirsiniz
-2. **Tip Ekle** - Yeni tarım ipucu ekleyebilirsiniz
-3. **Kategori Ekle** - Yeni haber kategorisi ekleyebilirsiniz
-4. **Tüm Verileri Listele** - Mevcut verileri görüntüleyebilirsiniz
+This script offers you the following options:
+1. **Add News** - You can add new news articles
+2. **Add Tip** - You can add new agriculture tips
+3. **Add Category** - You can add new news categories
+4. **List All Data** - You can view existing data
 
-### Yöntem 2: Python Kodu ile
+### Method 2: Using Python Code
 
-Doğrudan Python kodunda `database` modülünü kullanabilirsiniz:
+You can use the `database` module directly in Python code:
 
 ```python
 from backend import database
 
-# Kategori ekle
+# Add category
 category_id = database.add_category(
-    name="Tarım Haberleri",
-    description="Genel tarım haberleri"
+    name="Agriculture News",
+    description="General agriculture news"
 )
 
-# Haber ekle
+# Add news
 news_id = database.add_news(
-    title="Yeni Tarım Teknolojileri",
-    summary="Tarım sektöründe yeni teknolojiler",
-    content="Detaylı haber içeriği buraya gelir...",
+    title="New Agriculture Technologies",
+    summary="New technologies in the agriculture sector",
+    content="Detailed news content goes here...",
     category_id=category_id,
-    image_url="https://example.com/image.jpg"  # Opsiyonel
+    image_url="https://example.com/image.jpg"  # Optional
 )
 
-# Tip ekle
+# Add tip
 tip_id = database.add_tip(
-    title="Domates Yetiştirme",
-    content="Domates bitkileri için düzenli sulama önemlidir.",
-    difficulty="Kolay"  # Opsiyonel: Kolay, Orta, Zor
+    title="Tomato Growing",
+    content="Regular watering is important for tomato plants.",
+    difficulty="Easy"  # Optional: Easy, Medium, Hard
 )
 ```
 
-### Yöntem 3: API Endpoint'leri ile
+### Method 3: Using API Endpoints
 
-Backend çalışırken API endpoint'lerini kullanabilirsiniz:
+You can use API endpoints when the backend is running:
 
 ```bash
-# Kategori ekle
+# Add category
 curl -X POST "http://localhost:8000/api/categories" \
   -H "Content-Type: application/json" \
-  -d '{"name": "Tarım Haberleri", "description": "Genel tarım haberleri"}'
+  -d '{"name": "Agriculture News", "description": "General agriculture news"}'
 
-# Haber ekle
+# Add news
 curl -X POST "http://localhost:8000/api/news" \
   -H "Content-Type: application/json" \
   -d '{
-    "title": "Yeni Tarım Teknolojileri",
-    "summary": "Tarım sektöründe yeni teknolojiler",
-    "content": "Detaylı haber içeriği...",
+    "title": "New Agriculture Technologies",
+    "summary": "New technologies in the agriculture sector",
+    "content": "Detailed news content...",
     "category_id": 1,
     "image_url": "https://example.com/image.jpg"
   }'
 
-# Tip ekle
+# Add tip
 curl -X POST "http://localhost:8000/api/tips" \
   -H "Content-Type: application/json" \
   -d '{
-    "title": "Domates Yetiştirme",
-    "content": "Domates bitkileri için düzenli sulama önemlidir.",
-    "difficulty": "Kolay"
+    "title": "Tomato Growing",
+    "content": "Regular watering is important for tomato plants.",
+    "difficulty": "Easy"
   }'
 ```
 
-## 📊 Veri Sorgulama
+## 📊 Querying Data
 
-### Python ile
+### Using Python
 
 ```python
 from backend import database
 
-# Tüm haberleri getir
+# Get all news
 news = database.get_all_news(limit=10)
 
-# Kategoriye göre haberleri getir
+# Get news by category
 news = database.get_all_news(category_id=1)
 
-# Tüm tips'leri getir
-tips = database.get_all_tips(difficulty="Kolay")
+# Get all tips
+tips = database.get_all_tips(difficulty="Easy")
 
-# Kategorileri getir
+# Get categories
 categories = database.get_all_categories()
 ```
 
-### API ile
+### Using API
 
 ```bash
-# Tüm haberler
+# All news
 curl "http://localhost:8000/api/news"
 
-# Belirli kategorideki haberler
+# News in a specific category
 curl "http://localhost:8000/api/news?category_id=1"
 
-# Tüm tips'ler
+# All tips
 curl "http://localhost:8000/api/tips"
 
-# Kolay tips'ler
-curl "http://localhost:8000/api/tips?difficulty=Kolay"
+# Easy tips
+curl "http://localhost:8000/api/tips?difficulty=Easy"
 
-# Kategoriler
+# Categories
 curl "http://localhost:8000/api/categories"
 ```
 
-## 🔧 Veri Güncelleme ve Silme
+## 🔧 Updating and Deleting Data
 
-### Python ile
+### Using Python
 
 ```python
-# Haber güncelle
+# Update news
 database.update_news(
     news_id=1,
-    title="Güncellenmiş Başlık",
-    summary="Güncellenmiş özet"
+    title="Updated Title",
+    summary="Updated summary"
 )
 
-# Haber sil
+# Delete news
 database.delete_news(news_id=1)
 
-# Tip güncelle
+# Update tip
 database.update_tip(
     tip_id=1,
-    title="Güncellenmiş Tip Başlığı"
+    title="Updated Tip Title"
 )
 
-# Tip sil
+# Delete tip
 database.delete_tip(tip_id=1)
 ```
 
-### API ile
+### Using API
 
 ```bash
-# Haber güncelle
+# Update news
 curl -X PUT "http://localhost:8000/api/news/1" \
   -H "Content-Type: application/json" \
-  -d '{"title": "Güncellenmiş Başlık"}'
+  -d '{"title": "Updated Title"}'
 
-# Haber sil
+# Delete news
 curl -X DELETE "http://localhost:8000/api/news/1"
 ```
 
-## 📍 Veritabanı Dosyası
+## 📍 Database File
 
-Veritabanı dosyası proje kök dizininde `database.db` olarak saklanır.
+The database file is stored as `database.db` in the project root directory.
 
-## 🔍 Veritabanını İnceleme
+## 🔍 Examining the Database
 
-SQLite veritabanını doğrudan incelemek için:
+To examine the SQLite database directly:
 
 ```bash
-# SQLite CLI ile
+# Using SQLite CLI
 sqlite3 database.db
 
-# SQLite komutları
-.tables          # Tüm tabloları listele
-.schema news     # news tablosunun yapısını göster
-SELECT * FROM news;  # Tüm haberleri göster
-SELECT * FROM tips;  # Tüm tips'leri göster
+# SQLite commands
+.tables          # List all tables
+.schema news     # Show news table structure
+SELECT * FROM news;  # Show all news
+SELECT * FROM tips;  # Show all tips
 ```
 
-## 📚 API Dokümantasyonu
+## 📚 API Documentation
 
-Backend çalışırken API dokümantasyonuna şu adresten erişebilirsiniz:
+When the backend is running, you can access the API documentation at:
 
 - Swagger UI: http://localhost:8000/docs
 - ReDoc: http://localhost:8000/redoc
 
-## ⚠️ Notlar
+## ⚠️ Notes
 
-1. **Foreign Key İlişkileri**: Haber eklerken mevcut bir `category_id` kullanmalısınız
-2. **Unique Constraints**: `favorite_news` tablosunda aynı kullanıcı aynı haberi birden fazla kez favorileyemez
-3. **Timestamps**: `created_at` alanları otomatik olarak eklenir
-4. **Veri Yedekleme**: Düzenli olarak `database.db` dosyasını yedekleyin
+1. **Foreign Key Relationships**: When adding news, you must use an existing `category_id`
+2. **Unique Constraints**: In the `favorite_news` table, a user cannot favorite the same news article more than once
+3. **Timestamps**: `created_at` fields are automatically added
+4. **Data Backup**: Regularly backup the `database.db` file
 
-## 🎯 Örnek Kullanım Senaryosu
+## 🎯 Example Usage Scenario
 
-1. **Kategori Oluştur**:
+1. **Create Category**:
    ```python
-   cat_id = database.add_category("Teknoloji", "Tarım teknolojileri")
+   cat_id = database.add_category("Technology", "Agriculture technologies")
    ```
 
-2. **Haber Ekle**:
+2. **Add News**:
    ```python
    news_id = database.add_news(
-       title="Yapay Zeka ile Tarım",
-       summary="AI teknolojisi tarımda devrim yaratıyor",
-       content="Detaylı içerik...",
+       title="AI in Agriculture",
+       summary="AI technology is revolutionizing agriculture",
+       content="Detailed content...",
        category_id=cat_id
    )
    ```
 
-3. **Tip Ekle**:
+3. **Add Tip**:
    ```python
    tip_id = database.add_tip(
-       title="Akıllı Sulama",
-       content="Sensörlerle otomatik sulama sistemi kurun",
-       difficulty="Orta"
+       title="Smart Irrigation",
+       content="Set up an automatic irrigation system with sensors",
+       difficulty="Medium"
    )
    ```
 
-4. **Verileri Görüntüle**:
+4. **View Data**:
    ```python
    news = database.get_all_news()
    tips = database.get_all_tips()
    ```
-
