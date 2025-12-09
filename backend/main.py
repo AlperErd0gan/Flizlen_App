@@ -181,11 +181,14 @@ async def generate_with_fallback(prompt: str):
     
     last_exception = None
 
+    # Combine system prompt with user prompt
+    full_prompt = f"{SYSTEM_PROMPT}\n\n{prompt}"
+
     for model_name in MODEL_PRIORITY:
         try:
             print(f"INFO: Attempting generation with model: {model_name}")
-            model = genai.GenerativeModel(model_name, system_instruction=SYSTEM_PROMPT)
-            response = model.generate_content(prompt)
+            model = genai.GenerativeModel(model_name)
+            response = model.generate_content(full_prompt)
             return response
             
         except google_exceptions.ResourceExhausted as e:
