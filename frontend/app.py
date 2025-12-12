@@ -145,6 +145,40 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# Custom CSS for Tips
+st.markdown("""
+    <style>
+    .tip-card {
+        background-color: #FFFFFF;
+        padding: 1.5rem;
+        border-radius: 10px;
+        border-right: 5px solid #8B4513;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        color: #5A8560;
+    }
+    .tip-difficulty {
+        display: inline-block;
+        padding: 0.2rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+    .diff-easy { background-color: #4A6741; }
+    .diff-medium { background-color: #DAA520; }
+    .diff-hard { background-color: #8B4513; }
+    
+    .tip-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #8B4513;
+        margin-bottom: 0.5rem;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 # --- State Management ---
 if "page" not in st.session_state:
     st.session_state.page = "landing"
@@ -185,6 +219,15 @@ def fetch_news(limit: int = 10):
     except requests.exceptions.RequestException as e:
         return {"status": "error", "detail": str(e)}
 
+def fetch_tips(limit: int = 10):
+    """Fetch tips from backend API"""
+    try:
+        response = requests.get(f"{BACKEND_URL}/api/tips?limit={limit}", timeout=10)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        return {"status": "error", "detail": str(e)}
+
 def go_to_landing():
     st.session_state.page = "landing"
 
@@ -193,6 +236,9 @@ def go_to_chat():
 
 def go_to_news():
     st.session_state.page = "news"
+
+def go_to_tips():
+    st.session_state.page = "tips"
 
 # --- Views ---
 
@@ -203,14 +249,14 @@ def landing_page():
     col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
-        # Create a container for the navigation buttons
-        c1, c2 = st.columns(2, gap="large")
+        # Create a container for the navigation buttons - now 3 columns
+        c1, c2, c3 = st.columns(3, gap="medium")
         
         with c1:
             st.markdown("""
-            <div style="text-align: center; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 10px;">
+            <div style="text-align: center; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 10px; height: 160px;">
                 <h3 style="margin:0;">💬 Sohbet</h3>
-                <p style="color: #666;">Yapay zeka danışmanı ile sohbet edin</p>
+                <p style="color: #666; font-size: 0.9rem;">Yapay zeka danışmanı ile sohbet edin</p>
             </div>
             """, unsafe_allow_html=True)
             if st.button("Sohbete Git", use_container_width=True):
@@ -219,13 +265,24 @@ def landing_page():
 
         with c2:
             st.markdown("""
-            <div style="text-align: center; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 10px;">
+            <div style="text-align: center; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 10px; height: 160px;">
                 <h3 style="margin:0;">📰 Haberler</h3>
-                <p style="color: #666;">Son gelişmeler ve başlıklar</p>
+                <p style="color: #666; font-size: 0.9rem;">Son gelişmeler ve başlıklar</p>
             </div>
             """, unsafe_allow_html=True)
             if st.button("Haberlere Git", use_container_width=True):
                 go_to_news()
+                st.rerun()
+                
+        with c3:
+            st.markdown("""
+            <div style="text-align: center; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 10px; height: 160px;">
+                <h3 style="margin:0;">💡 İpuçları</h3>
+                <p style="color: #666; font-size: 0.9rem;">Pratik tarım bilgileri</p>
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button("İpuçlarına Git", use_container_width=True):
+                go_to_tips()
                 st.rerun()
 
 def chat_interface():
@@ -372,7 +429,70 @@ def news_interface():
     else:
         error_msg = news_response.get('detail', 'Sunucuya bağlanılamadı.')
         st.error(f"Haberler yüklenirken bir hata oluştu: {error_msg}")
-        if st.button("Tekrar Dene"):
+        if st.button("Tekrar Dene", key="news_retry"):
+            st.rerun()
+
+def tips_interface():
+    # Top Navigation Bar
+    col_nav1, col_nav2, col_nav3 = st.columns([1, 8, 1])
+    
+    with col_nav1:
+        if st.button("← Anasayfa"):
+            go_to_landing()
+            st.rerun()
+            
+    with col_nav2:
+        st.markdown(
+            "<h2 style='text-align: center; margin-top: -20px; color: #5a8560;'>💡 Pratik İpuçları</h2>", 
+            unsafe_allow_html=True
+        )
+        
+    with col_nav3:
+        st.empty() 
+
+    # Filter Options
+    # diff_filter = st.selectbox("Zorluk Seviyesi", ["Tümü", "Kolay", "Orta", "Zor"], key="diff_filter")
+    
+    # Fetch Tips from Backend
+    with st.spinner("İpuçları yükleniyor..."):
+        # You could implement server-side filtering by passing difficulty to fetch_tips
+        tips_response = fetch_tips(limit=20)
+        
+    if tips_response.get("status") == "success":
+        tips_items = tips_response.get("data", [])
+        
+        if not tips_items:
+            st.info("Henüz hiç ipucu bulunmuyor.")
+        
+        # Difficulty color mapping
+        diff_colors = {
+            "Kolay": "diff-easy",
+            "Easy": "diff-easy",
+            "Orta": "diff-medium",
+            "Medium": "diff-medium",
+            "Zor": "diff-hard",
+            "Hard": "diff-hard"
+        }
+        
+        for item in tips_items:
+            # Map difficulty to CSS class
+            diff_text = item.get('difficulty', 'Genel')
+            diff_class = diff_colors.get(diff_text, "diff-medium")
+            
+            st.markdown(f"""
+            <div class="tip-card">
+                <span class="tip-difficulty {diff_class}">{diff_text}</span>
+                <div class="tip-title">{item['title']}</div>
+                <div>{item['content']}</div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+        st.info("İpuçlarının sonu.")
+        
+    else:
+        error_msg = tips_response.get('detail', 'Sunucuya bağlanılamadı.')
+        st.error(f"İpuçları yüklenirken bir hata oluştu: {error_msg}")
+        if st.button("Tekrar Dene", key="tips_retry"):
             st.rerun()
 
 # --- Main Controller ---
@@ -383,6 +503,8 @@ def main():
         chat_interface()
     elif st.session_state.page == "news":
         news_interface()
+    elif st.session_state.page == "tips":
+        tips_interface()
 
 if __name__ == "__main__":
     main()
