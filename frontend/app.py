@@ -142,6 +142,19 @@ st.markdown("""
         align-items: center;
     }
     
+    /* News Link Styling */
+    a.news-card-link {
+        text-decoration: none !important;
+        color: inherit !important;
+        display: block;
+    }
+    a.news-card-link:hover .news-card {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        border-left: 5px solid #5a8560;
+    }
+    
     </style>
 """, unsafe_allow_html=True)
 
@@ -184,6 +197,8 @@ if "page" not in st.session_state:
     st.session_state.page = "landing"
 if "messages" not in st.session_state:
     st.session_state.messages = []
+if "selected_news" not in st.session_state:
+    st.session_state.selected_news = None
 
 # --- Helper Functions ---
 def check_backend_health():
@@ -228,6 +243,15 @@ def fetch_tips(limit: int = 10):
     except requests.exceptions.RequestException as e:
         return {"status": "error", "detail": str(e)}
 
+def fetch_news_item(news_id: int):
+    """Fetch single news item from backend API"""
+    try:
+        response = requests.get(f"{BACKEND_URL}/api/news/{news_id}", timeout=10)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        return {"status": "error", "detail": str(e)}
+
 def go_to_landing():
     st.session_state.page = "landing"
 
@@ -239,6 +263,10 @@ def go_to_news():
 
 def go_to_tips():
     st.session_state.page = "tips"
+
+def go_to_news_detail(news_item):
+    st.session_state.selected_news = news_item
+    st.session_state.page = "news_detail"
 
 # --- Views ---
 
@@ -397,7 +425,7 @@ def news_interface():
         if not news_items:
             st.info("Henüz hiç haber bulunmuyor.")
         
-        for item in news_items:
+        for index, item in enumerate(news_items):
             # Format date (handling different potential formats or None)
             display_date = "Tarih yok"
             if item.get('published_at'):
@@ -416,12 +444,20 @@ def news_interface():
             if not content_preview and item.get('content'):
                 content_preview = item['content'][:150] + "..." if len(item['content']) > 150 else item['content']
             
+            
+            # Navigation using HTML link to preserve style
+            # We create a link that reloads the page with ?news_id={id}
+            news_id = item.get('id', index)
+            js_link = f"?news_id={news_id}"
+            
             st.markdown(f"""
-            <div class="news-card">
-                <div class="news-date">{display_date}</div>
-                <div class="news-title">{item['title']}</div>
-                <div>{content_preview}</div>
-            </div>
+            <a href="{js_link}" target="_self" class="news-card-link">
+                <div class="news-card">
+                    <div class="news-date">{display_date}</div>
+                    <div class="news-title">{item['title']}</div>
+                    <div style="color: #555;">{content_preview}</div>
+                </div>
+            </a>
             """, unsafe_allow_html=True)
             
         st.info("Haberlerin sonu.")
@@ -431,6 +467,75 @@ def news_interface():
         st.error(f"Haberler yüklenirken bir hata oluştu: {error_msg}")
         if st.button("Tekrar Dene", key="news_retry"):
             st.rerun()
+
+def news_detail_interface():
+    # Helper to go back
+    def back_to_news():
+        # Clear query params
+        st.query_params.clear()
+        st.session_state.page = "news"
+        st.session_state.selected_news = None
+        
+    # Top Navigation
+    col_nav1, col_nav2, col_nav3 = st.columns([1, 8, 1])
+    
+    with col_nav1:
+        if st.button("← Haberlere Dön"):
+            back_to_news()
+            st.rerun()
+            
+    with col_nav2:
+        st.markdown(
+            "<h2 style='text-align: center; margin-top: -20px; color: #5a8560;'>Haber Detayı</h2>", 
+            unsafe_allow_html=True
+        )
+
+    # Get news item - either from session state or fetch using ID from query params
+    item = st.session_state.selected_news
+    
+    # If no item in session but we have ID in query params (direct link or refresh)
+    if not item and "news_id" in st.query_params:
+        try:
+            news_id = int(st.query_params["news_id"])
+            with st.spinner("Haber yükleniyor..."):
+                response = fetch_news_item(news_id)
+                if response.get("status") == "success":
+                    item = response.get("data")
+                    st.session_state.selected_news = item
+        except:
+            pass
+    
+    if not item:
+        st.error("Haber bulunamadı.")
+        if st.button("Geri Dön"):
+            back_to_news()
+            st.rerun()
+        return
+
+    # Display News Detail
+    # Parse date for display
+    display_date = "Tarih yok"
+    if item.get('published_at'):
+        try:
+            if 'T' in item['published_at']:
+                date_obj = datetime.datetime.fromisoformat(item['published_at'].replace('Z', '+00:00'))
+                display_date = date_obj.strftime("%B %d, %Y")
+            else:
+                display_date = item['published_at']
+        except:
+            display_date = item['published_at']
+
+    st.markdown(f"""
+    <div style="background-color: white; padding: 2.5rem; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 1rem;">
+        <h1 style="color: #4A6741; margin-bottom: 0.5rem; font-size: 2rem;">{item['title']}</h1>
+        <div style="color: #888; margin-bottom: 2rem; font-style: italic; border-bottom: 1px solid #eee; padding-bottom: 1rem;">
+            {display_date}
+        </div>
+        <div style="line-height: 1.8; color: #333; font-size: 1.1rem; whitespace: pre-wrap; font-family: 'Helvetica Neue', sans-serif;">
+            {item.get('content', '')}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 def tips_interface():
     # Top Navigation Bar
@@ -497,6 +602,10 @@ def tips_interface():
 
 # --- Main Controller ---
 def main():
+    # Check for query params for routing
+    if "news_id" in st.query_params:
+        st.session_state.page = "news_detail"
+
     if st.session_state.page == "landing":
         landing_page()
     elif st.session_state.page == "chat":
@@ -505,6 +614,8 @@ def main():
         news_interface()
     elif st.session_state.page == "tips":
         tips_interface()
+    elif st.session_state.page == "news_detail":
+        news_detail_interface()
 
 if __name__ == "__main__":
     main()
