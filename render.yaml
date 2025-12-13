@@ -1,0 +1,27 @@
+services:
+  # Backend API Service
+  - type: web
+    name: flizlen-backend
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.12
+      - key: GEMINI_API_KEY
+        sync: false # User will input this in dashboard
+
+  # Frontend Streamlit App
+  - type: web
+    name: flizlen-frontend
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run frontend/app.py --server.port $PORT --server.address 0.0.0.0
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.12
+      - key: BACKEND_URL
+        fromService:
+          type: web
+          name: flizlen-backend
+          property: url
