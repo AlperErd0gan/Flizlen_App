@@ -10,7 +10,10 @@ import datetime
 from typing import List, Dict
 
 # Configuration
+# Configuration
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
+if not BACKEND_URL.startswith("http"):
+    BACKEND_URL = f"http://{BACKEND_URL}"
 
 # --- Page configuration ---
 st.set_page_config(

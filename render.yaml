@@ -24,4 +24,4 @@ services:
         fromService:
           type: web
           name: flizlen-backend
-          property: url
+          property: hostport
