@@ -32,5 +32,3 @@ logs/
 dist/
 build/
 *.egg-info/
-
-setup_vps.sh

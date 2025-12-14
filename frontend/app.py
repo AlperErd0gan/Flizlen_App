@@ -799,16 +799,24 @@ def main():
         st.session_state.internal_nav = False
 
     if st.session_state.page == "landing":
-        if "news_id" in st.query_params: st.query_params.clear()
+        if "news_id" in st.query_params: 
+            st.query_params.clear()
+            st.rerun()
         landing_page()
     elif st.session_state.page == "chat":
-        if "news_id" in st.query_params: st.query_params.clear()
+        if "news_id" in st.query_params: 
+            st.query_params.clear()
+            st.rerun()
         chat_interface()
     elif st.session_state.page == "news":
-        if "news_id" in st.query_params: st.query_params.clear()
+        if "news_id" in st.query_params: 
+            st.query_params.clear()
+            st.rerun()
         news_interface()
     elif st.session_state.page == "tips":
-        if "news_id" in st.query_params: st.query_params.clear()
+        if "news_id" in st.query_params: 
+            st.query_params.clear()
+            st.rerun()
         tips_interface()
     elif st.session_state.page == "news_detail":
         news_detail_interface()
