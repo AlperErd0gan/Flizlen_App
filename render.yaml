@@ -1,29 +1,13 @@
 services:
-  # Backend API Service
+  # Monolithic Service (Backend + Frontend)
   - type: web
-    name: flizlen-backend
+    name: flizlen-app
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    startCommand: ./start_monolith.sh
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.12
       - key: GEMINI_API_KEY
         sync: false # User will input this in dashboard
-    plan: free
-
-  # Frontend Streamlit App
-  - type: web
-    name: flizlen-frontend
-    runtime: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: streamlit run frontend/app.py --server.port $PORT --server.address 0.0.0.0
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.10.12
-      - key: BACKEND_URL
-        fromService:
-          type: web
-          name: flizlen-backend
-          property: hostport
     plan: free
