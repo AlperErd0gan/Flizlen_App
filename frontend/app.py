@@ -398,15 +398,19 @@ def fetch_news_item(news_id: int):
         return {"status": "error", "detail": str(e)}
 
 def go_to_landing():
+    st.query_params.clear()
     st.session_state.page = "landing"
 
 def go_to_chat():
+    st.query_params.clear()
     st.session_state.page = "chat"
 
 def go_to_news():
+    st.query_params.clear()
     st.session_state.page = "news"
 
 def go_to_tips():
+    st.query_params.clear()
     st.session_state.page = "tips"
 
 def go_to_news_detail(news_item):
@@ -478,7 +482,7 @@ def chat_interface():
     col_nav1, col_nav2, col_nav3 = st.columns([2, 5, 2])
     
     with col_nav1:
-        if st.button("← Anasayfa"):
+        if st.button("← Ana Sayfa"):
             go_to_landing()
             st.rerun()
             
@@ -562,7 +566,7 @@ def news_interface():
     col_nav1, col_nav2, col_nav3 = st.columns([2, 5, 2])
     
     with col_nav1:
-        if st.button("← Anasayfa"):
+        if st.button("← Ana Sayfa"):
             go_to_landing()
             st.rerun()
             
@@ -644,9 +648,15 @@ def news_detail_interface():
     col_nav1, col_nav2, col_nav3 = st.columns([2, 5, 2])
     
     with col_nav1:
-        if st.button("← Haberlere Dön"):
-            back_to_news()
-            st.rerun()
+        c_back, c_home = st.columns([1, 1])
+        with c_back:
+            if st.button("← Geri"):
+                back_to_news()
+                st.rerun()
+        with c_home:
+            if st.button("🏠 Ana Sayfa"):
+                go_to_landing()
+                st.rerun()
             
     with col_nav2:
         st.markdown(
@@ -709,7 +719,7 @@ def tips_interface():
     col_nav1, col_nav2, col_nav3 = st.columns([2, 5, 2])
     
     with col_nav1:
-        if st.button("← Anasayfa"):
+        if st.button("← Ana Sayfa"):
             go_to_landing()
             st.rerun()
             
