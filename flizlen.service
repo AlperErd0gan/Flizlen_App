@@ -1,0 +1,19 @@
+[Unit]
+Description=Flizlen Monolithic App
+After=network.target
+
+[Service]
+# These placeholders are replaced by setup_vps.sh
+User=REPLACE_USER
+WorkingDirectory=REPLACE_PATH
+ExecStart=REPLACE_PATH/start_monolith.sh
+Restart=always
+RestartSec=5
+# Output to syslog
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=flizlen
+# Environment variables can be added here or loaded from .env file in the script
+
+[Install]
+WantedBy=multi-user.target
