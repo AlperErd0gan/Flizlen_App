@@ -32,6 +32,9 @@ echo "📦 Installing Python requirements..."
 pip install --upgrade pip
 pip install -r requirements.txt
 
+# Ensure start scripts are executable
+chmod +x start_monolith.sh start_backend.sh start_frontend.sh
+
 # 3. Configure Systemd Service
 echo "⚙️ Configuring Systemd Service..."
 
