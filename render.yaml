@@ -4,7 +4,7 @@ services:
     name: flizlen-app
     runtime: python
     buildCommand: ./render_build.sh
-    startCommand: ./start_render.sh
+    startCommand: bash start_render.sh
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.12
