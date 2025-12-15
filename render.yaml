@@ -3,8 +3,8 @@ services:
   - type: web
     name: flizlen-app
     runtime: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: ./start_monolith.sh
+    buildCommand: ./render_build.sh
+    startCommand: ./start_render.sh
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.12
