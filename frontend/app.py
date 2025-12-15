@@ -417,6 +417,13 @@ def go_to_tips():
     st.session_state.internal_nav = True
     st.session_state.page = "tips"
 
+def back_to_news():
+    """Navigate back to news list from detail"""
+    st.query_params.clear()
+    st.session_state.internal_nav = True
+    st.session_state.page = "news"
+    st.session_state.selected_news = None
+
 def go_to_news_detail(news_item):
     st.session_state.selected_news = news_item
     st.session_state.page = "news_detail"
@@ -449,9 +456,7 @@ def landing_page():
                 <div class="landing-desc">Yapay zeka asistanı ile<br>tarım üzerine konuşun</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("Sohbete Başla", use_container_width=True):
-                go_to_chat()
-                st.rerun()
+            st.button("Sohbete Başla", use_container_width=True, on_click=go_to_chat)
 
         with c2:
             st.markdown("""
@@ -461,9 +466,7 @@ def landing_page():
                 <div class="landing-desc">Tarımsal gelişmeler ve<br>güncel başlıklar</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("Haberleri Oku", use_container_width=True):
-                go_to_news()
-                st.rerun()
+            st.button("Haberleri Oku", use_container_width=True, on_click=go_to_news)
                 
         with c3:
             st.markdown("""
@@ -473,9 +476,7 @@ def landing_page():
                 <div class="landing-desc">Verimlilik için<br>pratik bilgiler</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("İpuçlarını Gör", use_container_width=True):
-                go_to_tips()
-                st.rerun()
+            st.button("İpuçlarını Gör", use_container_width=True, on_click=go_to_tips)
 
     # Footer
     display_footer()
@@ -486,9 +487,7 @@ def chat_interface():
     col_nav1, col_nav2, col_nav3 = st.columns([2, 5, 2])
     
     with col_nav1:
-        if st.button("← Ana Sayfa"):
-            go_to_landing()
-            st.rerun()
+        st.button("← Ana Sayfa", on_click=go_to_landing)
             
     with col_nav2:
         # We use HTML here to force text-align center
@@ -570,9 +569,7 @@ def news_interface():
     col_nav1, col_nav2, col_nav3 = st.columns([2, 5, 2])
     
     with col_nav1:
-        if st.button("← Ana Sayfa"):
-            go_to_landing()
-            st.rerun()
+        st.button("← Ana Sayfa", on_click=go_to_landing)
             
     with col_nav2:
         # We use HTML here to force text-align center
@@ -641,27 +638,15 @@ def news_interface():
     display_footer()
 
 def news_detail_interface():
-    # Helper to go back
-    def back_to_news():
-        # Clear query params
-        st.query_params.clear()
-        st.session_state.internal_nav = True
-        st.session_state.page = "news"
-        st.session_state.selected_news = None
-        
     # Top Navigation
     col_nav1, col_nav2, col_nav3 = st.columns([2, 5, 2])
     
     with col_nav1:
         c_back, c_home = st.columns([1, 1])
         with c_back:
-            if st.button("← Geri"):
-                back_to_news()
-                st.rerun()
+            st.button("← Geri", on_click=back_to_news)
         with c_home:
-            if st.button("🏠 Ana Sayfa"):
-                go_to_landing()
-                st.rerun()
+            st.button("🏠 Ana Sayfa", on_click=go_to_landing)
             
     with col_nav2:
         st.markdown(
@@ -686,9 +671,7 @@ def news_detail_interface():
     
     if not item:
         st.error("Haber bulunamadı.")
-        if st.button("Geri Dön"):
-            back_to_news()
-            st.rerun()
+        st.button("Geri Dön", on_click=back_to_news)
         return
 
     # Display News Detail
@@ -724,9 +707,7 @@ def tips_interface():
     col_nav1, col_nav2, col_nav3 = st.columns([2, 5, 2])
     
     with col_nav1:
-        if st.button("← Ana Sayfa"):
-            go_to_landing()
-            st.rerun()
+        st.button("← Ana Sayfa", on_click=go_to_landing)
             
     with col_nav2:
         st.markdown(
