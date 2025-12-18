@@ -1,4 +1,4 @@
-# Flizlen App
+# Filizlen App
 
 A modern web application with FastAPI backend and Streamlit frontend, integrated with Google Gemini AI.
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Script to start both backend and frontend
 
-echo "🚀 Starting Flizlen App..."
+echo "🚀 Starting Filizlen App..."
 echo ""
 
 # Check if .env file exists
@@ -72,7 +72,7 @@ else
 fi
 
 echo ""
-echo "✨ Flizlen App is running!"
+echo "✨ Filizlen App is running!"
 echo ""
 echo "📍 Access points:"
 echo "   Frontend: http://localhost:8501"

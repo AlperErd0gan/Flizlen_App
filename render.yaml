@@ -1,7 +1,7 @@
 services:
   # Monolithic Service (Backend + Frontend)
   - type: web
-    name: flizlen-app
+    name: filizlen-app
     runtime: python
     buildCommand: ./render_build.sh
     startCommand: bash start_render.sh

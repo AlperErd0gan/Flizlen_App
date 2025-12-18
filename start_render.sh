@@ -1,7 +1,7 @@
 #!/bin/bash
 set -o pipefail
 
-echo "🚀 Starting Flizlen on Render..."
+echo "🚀 Starting Filizlen on Render..."
 
 # on Render, we are already in the project root
 APP_DIR=$(pwd)

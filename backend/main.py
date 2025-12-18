@@ -1,5 +1,5 @@
 """
-FastAPI Backend for Flizlen App
+FastAPI Backend for Filizlen App
 Handles API endpoints and Gemini AI integration
 """
 
@@ -79,7 +79,7 @@ async def lifespan(app: FastAPI):
 # Initialize FastAPI app
 # Initialize FastAPI app
 app = FastAPI(
-    title="Flizlen App API",
+    title="Filizlen App API",
     description="Backend API with Gemini AI integration and RAG",
     version="1.1.0",
     lifespan=lifespan
@@ -268,7 +268,7 @@ async def root():
     """Health check endpoint"""
     return {
         "status": "healthy",
-        "message": "Flizlen App API is running"
+        "message": "Filizlen App API is running"
     }
 
 @app.get("/health", response_model=HealthResponse)

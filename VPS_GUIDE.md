@@ -1,4 +1,4 @@
-# 🚀 Flizlen App - Hostinger VPS Deployment Guide
+# 🚀 Filizlen App - Hostinger VPS Deployment Guide
 
 Follow these steps to deploy your application to a Hostinger VPS (Ubuntu).
 

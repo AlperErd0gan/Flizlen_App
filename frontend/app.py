@@ -1,5 +1,5 @@
 """
-Streamlit Frontend for Flizlen App
+Streamlit Frontend for Filizlen App
 User interface for interacting with the FastAPI backend and Gemini AI
 """
 
@@ -17,7 +17,7 @@ if not BACKEND_URL.startswith("http"):
 
 # --- Page configuration ---
 st.set_page_config(
-    page_title="Flizlen App",
+    page_title="Filizlen App",
     page_icon="🌿",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -432,14 +432,14 @@ def display_footer():
     """Display the application footer"""
     st.markdown("""
     <div class="footer-container">
-        <div>© 2025 Flizlen App. Tüm hakları saklıdır.</div>
+        <div>© 2025 Filizlen App. Tüm hakları saklıdır.</div>
     </div>
     """, unsafe_allow_html=True)
 
 # --- Views ---
 
 def landing_page():
-    st.markdown('<div class="main-header">🌿 Flizlen</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header">🌿 Filizlen</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-header">Tarım haberleri ve akıllı öneriler için dijital rehberiniz</div>', unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 2, 1])

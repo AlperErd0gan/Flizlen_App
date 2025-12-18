@@ -1,5 +1,5 @@
 [Unit]
-Description=Flizlen Monolithic App
+Description=Filizlen Monolithic App
 After=network.target
 
 [Service]
@@ -12,7 +12,7 @@ RestartSec=5
 # Output to syslog
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=flizlen
+SyslogIdentifier=filizlen
 # Environment variables can be added here or loaded from .env file in the script
 
 [Install]

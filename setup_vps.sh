@@ -5,7 +5,7 @@ set -o pipefail
 APP_DIR=$(pwd)
 USER_NAME=$(whoami)
 
-echo "🌿 Starting Flizlen VPS Setup..."
+echo "🌿 Starting Filizlen VPS Setup..."
 echo "📍 App Directory: $APP_DIR"
 echo "👤 User: $USER_NAME"
 
