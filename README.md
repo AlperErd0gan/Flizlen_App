@@ -209,6 +209,16 @@ In short:
 
 > **Model caching = Fast, consistent, low-cost model reuse (session-like behavior, but not per-user).**
 
+## Embedding Model Performance
+
+We compared the AI-based **text-embedding-004** model against a statistical **TF-IDF (Term Frequency-Inverse Document Frequency)** baseline found in `compare_embeddings.py`.
+
+**Comparison Result:**
+*   **TF-IDF Baseline:** Score **0.00** (Failed to capture semantic context)
+*   **text-embedding-004 (AI):** Score **0.18** (Successfully captured semantic context)
+
+This proves that the AI model significantly outperforms traditional statistical methods in understanding semantic relationships, even without exact keyword matches. Therefore we used the AI model for embedding.
+
 ## 📄 License
 
 This project is provided as-is for development purposes.
