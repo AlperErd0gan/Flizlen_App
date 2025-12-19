@@ -18,29 +18,22 @@ except ImportError:
     import database
 
 class LightweightRAG:
-    def __init__(self, api_key: str = None):
+    def __init__(self):
         self.documents = []  # Stores metadata and text
         self.embeddings = None # Stores numpy array of embeddings
-        self.api_key = api_key or os.getenv("GEMINI_API_KEY")
+        # GeminiClient handles API keys and configuration
+        from backend.gemini_client import gemini_client
+        self.client = gemini_client
         
-        if not self.api_key:
-            logger.warning("Gemini API Key not found. RAG will not function.")
-            return
-
         self.embedding_model = "models/text-embedding-004" 
         self.cache_file = os.path.join(os.path.dirname(__file__), "rag_cache.pkl")
-        
-        if not self.api_key:
-            logger.warning("Gemini API Key not found. RAG will not function.")
-            return
-
-        genai.configure(api_key=self.api_key)
 
     def _get_embedding(self, text: str) -> np.ndarray:
         """Get embedding for a single text"""
         try:
             # text-embedding-004 supports 768 dimensions
-            result = genai.embed_content(
+            # Use GeminiClient for retry logic
+            result = self.client.embed_content(
                 model=self.embedding_model,
                 content=text,
                 task_type="retrieval_document"
@@ -114,7 +107,7 @@ class LightweightRAG:
             batch = batch_texts[i:i+BATCH_SIZE]
             try:
                 # Proper batch embedding call
-                result = genai.embed_content(
+                result = self.client.embed_content(
                     model=self.embedding_model,
                     content=batch,
                     task_type="retrieval_document"
@@ -163,7 +156,7 @@ class LightweightRAG:
 
         try:
             # Embed query
-            query_content = genai.embed_content(
+            query_content = self.client.embed_content(
                 model=self.embedding_model,
                 content=query,
                 task_type="retrieval_query"

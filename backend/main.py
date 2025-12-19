@@ -16,6 +16,7 @@ import google.generativeai as genai
 from google.api_core import exceptions as google_exceptions
 from backend import database
 from backend.rag_system import rag_system
+from backend.gemini_client import gemini_client
 from contextlib import asynccontextmanager
 
 # Load environment variables (kept for safety, duplicate is harmless)
@@ -95,11 +96,9 @@ app.add_middleware(
 )
 
 # Configure Gemini API
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
-else:
-    print("Warning: GEMINI_API_KEY not found in environment variables")
+# gemini_client handles configuration automatically
+if not gemini_client.api_keys:
+    print("Warning: No GEMINI_API_KEY found in environment variables")
 
 # Request/Response Models
 class ChatRequest(BaseModel):
@@ -147,63 +146,19 @@ class CategoryCreate(BaseModel):
     name: str
     description: Optional[str] = None
 
-# Initialize Gemini model
-def get_gemini_model():
-    """Get configured Gemini model"""
-    try:
-        # Try different model names for compatibility (newest first)
-        # Based on available models from API
-        model_names = [
-            'gemini-2.5-flash',           # Fast and efficient
-            'gemini-2.5-pro',             # Most capable
-            'gemini-pro-latest',          # Latest stable
-            'gemini-flash-latest',        # Latest fast model
-            'gemini-2.0-flash',          # Alternative flash
-            'gemini-1.5-pro-latest',      # Fallback
-            'gemini-1.5-pro',             # Fallback
-        ]
-        
-        for model_name in model_names:
-            try:
-                model = genai.GenerativeModel(model_name, system_instruction=SYSTEM_PROMPT)
-                # Test if model is accessible with a simple test
-                return model
-            except Exception as e:
-                print(f"Model {model_name} failed: {str(e)}")
-                continue
-        
-        # If all fail, raise error with available models info
-        try:
-            # Try to list available models
-            models = genai.list_models()
-            available = [m.name for m in models if 'generateContent' in m.supported_generation_methods]
-            raise HTTPException(
-                status_code=500, 
-                detail=f"Failed to initialize any Gemini model. Available models: {available[:5]}"
-            )
-        except:
-            raise HTTPException(
-                status_code=500, 
-                detail="Failed to initialize Gemini model. Please check your API key and try using 'gemini-1.5-pro' or 'gemini-1.0-pro'"
-            )
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to initialize Gemini model: {str(e)}. Please check your API key and model availability.")
 
-# Cache for models to avoid recreating them and resending system prompt
-_model_cache = {}
 
 async def generate_with_fallback(prompt: str):
     """
     Attempts to generate content using a prioritized list of models.
-    If a ResourceExhausted (Quota) error occurs, it switches to the next model.
-    Uses cached models with system_instruction for efficiency (avoids sending system prompt in every request).
+    If a ResourceExhausted (Quota) error occurs (on all keys), it switches to the next model.
+    Uses GeminiClient which handles key rotation internally for each model.
     """
     # Priority list as requested
     MODEL_PRIORITY = [
         "gemini-2.5-flash",
-        "gemini-2.5-flash-lite"
+        "gemini-2.5-flash-lite",
+        "gemini-1.5-flash"
     ]
     
     last_exception = None
@@ -212,52 +167,27 @@ async def generate_with_fallback(prompt: str):
         try:
             print(f"INFO: Attempting generation with model: {model_name}")
             
-            # Use cached model if available, otherwise create and cache it
-            if model_name not in _model_cache:
-                try:
-                    # Try with system_instruction first (most efficient - system prompt sent once)
-                    _model_cache[model_name] = genai.GenerativeModel(
-                        model_name, 
-                        system_instruction=SYSTEM_PROMPT
-                    )
-                    print(f"INFO: Created and cached model {model_name} with system_instruction")
-                except (TypeError, ValueError) as e:
-                    # Fallback: if system_instruction not supported, create model without it
-                    # and we'll add system prompt to each request
-                    _model_cache[model_name] = {
-                        'model': genai.GenerativeModel(model_name),
-                        'has_system_instruction': False
-                    }
-                    print(f"INFO: Created and cached model {model_name} without system_instruction (fallback mode)")
+            # GeminiClient handles key rotation and model execution
+            # We pass system prompt if the model supports it (we assume new ones do)
+            # Or we can let the client handle it.
+            # Client's generate_content wrapper handles the call.
             
-            # Get model from cache
-            cached_item = _model_cache[model_name]
-            
-            # Check if it's a dict (fallback mode) or direct model (with system_instruction)
-            if isinstance(cached_item, dict):
-                # Fallback mode: add system prompt to each request
-                model = cached_item['model']
-                full_prompt = f"{SYSTEM_PROMPT}\n\n{prompt}"
-                response = model.generate_content(full_prompt)
-            else:
-                # Optimized mode: model has system_instruction, use prompt directly
-                model = cached_item
-                response = model.generate_content(prompt)
+            response = gemini_client.generate_content(
+                model_name=model_name,
+                prompt=prompt,
+                system_instruction=SYSTEM_PROMPT
+            )
             
             return response
             
         except google_exceptions.ResourceExhausted as e:
-            print(f"WARNING: Quota exceeded for {model_name}. Switching to fallback...")
+            print(f"WARNING: Quota exceeded for {model_name} on ALL keys. Switching to next model...")
             last_exception = e
-            continue  # Try the next model in the list
+            continue  # Try the next model
             
         except Exception as e:
-            # If it's a different error (e.g. InvalidArgument), usually we shouldn't retry
-            # simply with a different model, but for robustness we can log it.
             print(f"ERROR: Failed with {model_name}: {str(e)}")
             last_exception = e
-            # Depending on the error type, you might want to break here. 
-            # For now, we continue to try the next model just in case.
             continue
 
     # If loop finishes without returning, raise the last exception
@@ -274,7 +204,7 @@ async def root():
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
     """Health check endpoint"""
-    gemini_status = "configured" if GEMINI_API_KEY else "not_configured"
+    gemini_status = "configured" if gemini_client.api_keys else "not_configured"
     return {
         "status": "healthy",
         "message": f"API is running. Gemini API: {gemini_status}"
@@ -285,7 +215,7 @@ async def chat(request: ChatRequest):
     """
     Chat endpoint that processes user messages using Gemini AI with Fallback
     """
-    if not GEMINI_API_KEY:
+    if not gemini_client.api_keys:
         raise HTTPException(
             status_code=500,
             detail="Gemini API key not configured. Please set GEMINI_API_KEY in your .env file"
@@ -381,15 +311,15 @@ async def generate_text(prompt: str):
     """
     Simple text generation endpoint
     """
-    if not GEMINI_API_KEY:
+    if not gemini_client.api_keys:
         raise HTTPException(
             status_code=500,
             detail="Gemini API key not configured"
         )
     
     try:
-        model = get_gemini_model()
-        response = model.generate_content(prompt)
+        # Use gemini-2.5-flash as default for simple generation
+        response = gemini_client.generate_content("gemini-2.5-flash", prompt)
         
         # Handle different response formats
         if hasattr(response, 'text'):
