@@ -1,16 +1,5 @@
 # AWS EC2 Manual Deployment Checklist
 
-This is your master checklist for the **"Clean Deployment"** strategy.
-
-### Quick Answer: "Does it keep running if I close terminal?"
-**YES.** That is exactly what `tmux` does.
-*   It creates a "virtual terminal" session on the server.
-*   When you "detach" (`CTRL+B` then `D`), the session stays alive in the background.
-*   You can disconnect SSH, shut down your laptop, and the app runs 24/7.
-*   You can reconnect later with `tmux attach -t flizlen`.
-
----
-
 ### 1. Launch & Connect
 *   [ ] Launch **New** EC2 Instance (Ubuntu 22.04 LTS).
 *   [ ] Allow Ports in Security Group: `22` (SSH), `8000` (API), `8501` (UI).
